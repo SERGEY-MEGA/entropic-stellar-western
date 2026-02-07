@@ -5,6 +5,11 @@
 
 ![Game Screenshot](screenshot.png) <!-- (Optional: Add a screenshot later) -->
 
+## Запуск Онлайн (One-Click)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/SERGEY-MEGA/entropic-stellar-western)
+[![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=for-the-badge&logo=codesandbox)](https://codesandbox.io/s/github/SERGEY-MEGA/entropic-stellar-western)
+
+
 ## О Проекте
 Стилизованный FPS, созданный с использованием **Three.js** и **Cannon.js**. Игрок выступает в роли шерифа, зачищающего каньон от бандитов.
 
