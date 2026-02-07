@@ -11,7 +11,7 @@ export class Minimap {
         this.container.id = 'minimap';
         this.container.style.cssText = `
             position: absolute;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             width: 200px;
             height: 200px;

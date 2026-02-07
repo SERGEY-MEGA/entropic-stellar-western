@@ -609,11 +609,59 @@ export class Player {
                 `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>` :
                 `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="15" y1="15" x2="25" y2="25" stroke="white" stroke-width="2" /><line x1="25" y1="15" x2="15" y2="25" stroke="white" stroke-width="2" /></svg>`;
 
-            if (killed) this.game.soundManager.playHit('kill');
+            if (killed) {
+                this.game.soundManager.playHit('kill');
+                // Heal on Kill (Fixed 5)
+                this.heal(5);
+            } else {
+                // Heal on Hit (1)
+                this.heal(1);
+            }
 
             setTimeout(() => {
                 el.style.opacity = 0;
             }, 100);
+        }
+    }
+
+    heal(amount) {
+        if (this.health >= 100) return;
+        const oldHealth = this.health;
+        this.health = Math.min(100, this.health + amount);
+
+        const diff = this.health - oldHealth;
+        if (diff > 0) {
+            // Visual Float
+            const healEl = document.createElement('div');
+            healEl.innerText = `+${diff} HP`;
+            healEl.style.position = 'absolute';
+            healEl.style.color = '#00ff00';
+            healEl.style.fontWeight = 'bold';
+            healEl.style.fontSize = '24px';
+            healEl.style.left = '50%';
+            healEl.style.top = '45%'; // Slightly above center
+            healEl.style.transform = 'translate(-50%, -50%)';
+            healEl.style.pointerEvents = 'none';
+            healEl.style.textShadow = '1px 1px black';
+            document.body.appendChild(healEl);
+
+            // Animate up
+            let op = 1;
+            let top = 45;
+            const anim = setInterval(() => {
+                op -= 0.05;
+                top -= 0.5;
+                healEl.style.opacity = op;
+                healEl.style.top = top + '%';
+                if (op <= 0) {
+                    clearInterval(anim);
+                    healEl.remove();
+                }
+            }, 50);
+
+            // Update New UI
+            const healthVal = document.getElementById('health-value');
+            if (healthVal) healthVal.innerText = Math.ceil(this.health);
         }
     }
 
@@ -800,8 +848,10 @@ export class Player {
         if (this.game.state === 'GAMEOVER') return;
 
         this.health = Math.max(0, this.health - amount);
-        const healthEl = document.getElementById('health');
-        if (healthEl) healthEl.innerText = 'Health: ' + this.health;
+
+        // Update New UI
+        const healthVal = document.getElementById('health-value');
+        if (healthVal) healthVal.innerText = Math.ceil(this.health);
 
         // Red Flash
         const overlay = document.createElement('div');

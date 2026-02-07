@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 
 export class Enemy {
-    constructor(game, x, y, z) {
+    constructor(game, x, y, z, isBoss = false) {
         this.game = game;
-        this.health = 300;
-        this.maxHealth = 300;
-        this.speed = 5.0;
+        this.isBoss = isBoss;
+        this.health = isBoss ? 1000 : 300;
+        this.maxHealth = this.health;
+        this.speed = isBoss ? 4.5 : 5.0; // Boss moves heavily
         this.isDead = false;
         this.lastAttack = 0;
         this.recoil = 0; // Visual recoil
@@ -14,19 +15,25 @@ export class Enemy {
         // Visual - Humanoid Group
         this.mesh = new THREE.Group();
         this.mesh.position.set(x, y + 1, z);
+        if (this.isBoss) {
+            this.mesh.scale.set(1.3, 1.3, 1.3); // Bigger
+        }
         this.mesh.userData.entity = this;
         this.game.scene.add(this.mesh);
 
         // Colors
         const skinColor = 0xd2b48c;
-        const shirtColor = Math.random() > 0.5 ? 0x8b4513 : 0x556b2f; // Brown or Olive
-        const pantsColor = 0x2f4f4f; // Dark Slate Gray
-        const hatColor = 0x1a1a1a;
+        const shirtColor = this.isBoss ? 0x800000 : (Math.random() > 0.5 ? 0x8b4513 : 0x556b2f); // Boss = Dark Red
+        const pantsColor = this.isBoss ? 0x000000 : 0x2f4f4f; // Boss = Black
+        const hatColor = this.isBoss ? 0xffffff : 0x1a1a1a; // Boss = White Hat (The Big Boss) OR Blacker? Let's go White for "The Sheriff/Leader" look or All Black. Let's go All Black for Bad Guy Leader.
+        // Actually user said "Glavar" (Leader). Let's do Black Hat with Red Band? Or just 0x111111.
+
+        const finalHatColor = this.isBoss ? 0x222222 : 0x1a1a1a;
 
         const skinMat = new THREE.MeshStandardMaterial({ color: skinColor });
         const shirtMat = new THREE.MeshStandardMaterial({ color: shirtColor });
         const pantsMat = new THREE.MeshStandardMaterial({ color: pantsColor });
-        const hatMat = new THREE.MeshStandardMaterial({ color: hatColor });
+        const hatMat = new THREE.MeshStandardMaterial({ color: finalHatColor });
 
         // --- Model Construction (Simplified Humanoid) ---
         // Torso
@@ -128,6 +135,11 @@ export class Enemy {
         // AI State
         this.state = 'PATROL';
         this.pickRandomPatrolPoint();
+
+        // Spawn Chatter
+        if (this.isBoss) {
+            this.game.dialogueSystem.triggerEvent('BOSS_SPAWN', this);
+        }
     }
 
     createHealthBar() {
@@ -143,6 +155,11 @@ export class Enemy {
 
     update(dt) {
         if (this.isDead) return;
+
+        // Random IDLE Chatter
+        if (Math.random() < 0.002) {
+            this.game.dialogueSystem.triggerEvent('IDLE', this);
+        }
 
         // Sync Visuals
         this.mesh.position.copy(this.body.position);
@@ -255,6 +272,11 @@ export class Enemy {
     shoot() {
         if (this.isDead) return;
 
+        // Combat Chatter
+        if (Math.random() < 0.2) {
+            this.game.dialogueSystem.triggerEvent('COMBAT', this);
+        }
+
         // Trigger Visual Recoil
         this.recoil = 0.5; // Kick value
 
@@ -299,6 +321,7 @@ export class Enemy {
 
     die() {
         this.isDead = true;
+        this.game.dialogueSystem.triggerEvent('DEATH', this); // Shout on death
         this.game.scene.remove(this.mesh);
         this.game.physicsWorld.removeBody(this.body);
         const index = this.game.enemies.indexOf(this);

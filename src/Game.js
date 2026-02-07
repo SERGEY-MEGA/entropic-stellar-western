@@ -161,8 +161,8 @@ export class Game {
             });
             btn.addEventListener('click', () => {
                 if (this.state === 'MENU') {
-                    this.selectedMenuIndex = index; // Ensure sync
-                    this.triggerMenuAction();
+                    this.selectedMenuIndex = index;
+                    this.triggerMenuAction(btn); // Direct pass
                 }
             });
         });
@@ -202,12 +202,17 @@ export class Game {
         });
     }
 
-    triggerMenuAction() {
-        const btn = this.menuItems[this.selectedMenuIndex];
+    triggerMenuAction(clickedBtn = null) {
+        const btn = clickedBtn || this.menuItems[this.selectedMenuIndex];
         if (!btn) return;
 
         if (btn.id === 'btn-start') {
-            this.startGame();
+            try {
+                this.startGame();
+            } catch (e) {
+                console.error("Start Game Failed:", e);
+                alert("Game Start Error: " + e.message);
+            }
         }
         else if (btn.id === 'btn-diff') {
             this.cycleDifficulty(btn);
@@ -231,18 +236,25 @@ export class Game {
         if (crosshair) crosshair.style.display = 'block';
 
         this.state = 'PLAYING';
-        this.player.controls.lock();
-        this.spawnInitialEnemies();
+
+        try {
+            this.player.controls.lock();
+            this.spawnInitialEnemies();
+        } catch (e) {
+            console.error("Spawn Failed:", e);
+        }
     }
 
     cycleDifficulty(btn) {
         const diffs = ['EASY', 'NORMAL', 'HARD'];
+        const labels = { 'EASY': 'ЛЕГКО', 'NORMAL': 'НОРМАЛЬНО', 'HARD': 'СЛОЖНО' };
+
         let currIdx = diffs.indexOf(this.difficulty);
         if (currIdx === -1) currIdx = 1;
 
         currIdx = (currIdx + 1) % diffs.length;
         this.difficulty = diffs[currIdx];
-        btn.innerText = this.difficulty;
+        btn.innerText = labels[this.difficulty];
     }
 
     spawnInitialEnemies() {
