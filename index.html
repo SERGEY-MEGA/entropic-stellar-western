@@ -106,6 +106,40 @@
         style="position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 500; opacity: 0;">
     </div>
 
+    <!-- Sniper Scope Overlay (hidden by default) -->
+    <div id="sniper-scope"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150;">
+        <!-- Dark vignette borders -->
+        <div
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.95) 65%);">
+        </div>
+        <!-- Crosshair lines -->
+        <div style="position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(255,0,0,0.6);">
+        </div>
+        <div style="position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(255,0,0,0.6);">
+        </div>
+        <!-- Center dot -->
+        <div
+            style="position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: red; border-radius: 50%; transform: translate(-50%, -50%);">
+        </div>
+        <!-- Range ticks -->
+        <div
+            style="position: absolute; top: 52%; left: 50%; transform: translateX(-50%); width: 20px; height: 1px; background: rgba(255,0,0,0.4);">
+        </div>
+        <div
+            style="position: absolute; top: 54%; left: 50%; transform: translateX(-50%); width: 14px; height: 1px; background: rgba(255,0,0,0.3);">
+        </div>
+        <div
+            style="position: absolute; top: 56%; left: 50%; transform: translateX(-50%); width: 10px; height: 1px; background: rgba(255,0,0,0.2);">
+        </div>
+    </div>
+
+    <!-- Scope Hint (shown when using Sharps) -->
+    <div id="scope-hint"
+        style="display: none; position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.5); font-size: 13px; pointer-events: none; z-index: 100;">
+        [Q] — Прицел
+    </div>
+
     <div id="player-stats">
         <div>Kills: <span id="kill-count">0</span></div>
         <div>Health: 100</div>
@@ -116,19 +150,19 @@
         <div class="menu-btn" id="btn-start">ИГРАТЬ</div>
         <p>
             WASD - Движение | Мышь - Обзор<br>
-            КЛИК - Стрельба | G - Магазин | ESC - Меню
+            КЛИК - Стрельба | G - Магазин | Q - Прицел | ESC - Меню
         </p>
     </div>
 
-    <!-- Shop Menu (hidden by default, JS toggles via display:block) -->
+    <!-- Shop Menu (hidden by default, JS toggles via display:flex) -->
     <div id="shop-menu"
-        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; color: white; flex-direction: column; align-items: center; justify-content: center;">
-        <h1 style="color: gold; text-shadow: 2px 2px 0 #000;">МАГАЗИН ОРУЖИЯ</h1>
+        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; color: white; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto;">
+        <h1 style="color: gold; text-shadow: 2px 2px 0 #000; margin: 20px 0 10px;">МАГАЗИН ОРУЖИЯ</h1>
         <div id="shop-items"
-            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1000px;">
+            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 1000px; padding: 10px; max-height: 70vh; overflow-y: auto;">
             <!-- Items injected by JS -->
         </div>
-        <div style="margin-top: 30px; color: #aaa;">Нажми [G] или [ESC] чтобы закрыть</div>
+        <div style="margin: 15px 0; color: #aaa;">Нажми [G] или [ESC] чтобы закрыть</div>
     </div>
 
     <script type="importmap">

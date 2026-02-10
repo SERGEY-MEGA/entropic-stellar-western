@@ -46,10 +46,14 @@ export class Player {
         this.scene.add(this.camera); // Add camera to scene so weapon is visible
 
         this.health = 100;
-        this.health = 100;
         this.shakeIntensity = 0;
         this.targetRecoilPitch = 0;
         this.recoilPitch = 0;
+
+        // Scope state
+        this.isScoped = false;
+        this.defaultFOV = 75;
+        this.scopedFOV = 20;
 
         this.setupInput();
     }
@@ -175,6 +179,9 @@ export class Player {
                         this.body.velocity.y = 8; // Higher jump for gravity
                         this.canJump = false;
                     }
+                    break;
+                case 'KeyQ':
+                    this.toggleScope();
                     break;
             }
         };
@@ -407,6 +414,42 @@ export class Player {
                 ${this.currentAmmo === 1 ? '<div style="position:fixed; top:40%; left:0; width:100%; text-align:center; color:red; font-size:60px; font-weight:bold; text-shadow:4px 4px black; pointer-events:none; z-index:999;">ПОСЛЕДНИЙ ПАТРОН</div>' : ''}
             `;
         }
+        // Show scope hint for Sharps
+        const scopeHint = document.getElementById('scope-hint');
+        if (scopeHint) {
+            scopeHint.style.display = (this.currentWeapon === 'sharps' && !this.isScoped) ? 'block' : 'none';
+        }
+    }
+
+    toggleScope() {
+        // Only Sharps has a scope
+        if (this.currentWeapon !== 'sharps') return;
+
+        this.isScoped = !this.isScoped;
+
+        const scopeOverlay = document.getElementById('sniper-scope');
+        const crosshair = document.getElementById('crosshair');
+        const scopeHint = document.getElementById('scope-hint');
+
+        if (this.isScoped) {
+            // Zoom in
+            this.camera.fov = this.scopedFOV;
+            this.camera.updateProjectionMatrix();
+            // Show scope, hide crosshair and weapon
+            if (scopeOverlay) scopeOverlay.style.display = 'block';
+            if (crosshair) crosshair.style.display = 'none';
+            if (scopeHint) scopeHint.style.display = 'none';
+            this.weaponGroup.visible = false;
+        } else {
+            // Zoom out
+            this.camera.fov = this.defaultFOV;
+            this.camera.updateProjectionMatrix();
+            // Hide scope, show crosshair and weapon
+            if (scopeOverlay) scopeOverlay.style.display = 'none';
+            if (crosshair) crosshair.style.display = 'block';
+            if (scopeHint) scopeHint.style.display = 'block';
+            this.weaponGroup.visible = true;
+        }
     }
 
     setWeapon(type) {
@@ -420,6 +463,16 @@ export class Player {
         this.currentAmmo = stats.magSize;
         this.isReloading = false;
         this.dryFireCount = 0;
+
+        // Exit scope if switching away from sharps
+        if (this.isScoped) {
+            this.isScoped = false;
+            this.camera.fov = this.defaultFOV;
+            this.camera.updateProjectionMatrix();
+            const scopeOverlay = document.getElementById('sniper-scope');
+            if (scopeOverlay) scopeOverlay.style.display = 'none';
+            this.weaponGroup.visible = true;
+        }
 
         // Rebuild Weapon Meshes
         // Clear existing
