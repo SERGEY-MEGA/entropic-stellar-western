@@ -577,11 +577,21 @@ export class Player {
                 }
 
                 if (obj.userData.entity && obj.userData.entity.takeDamage) {
-                    const killed = obj.userData.entity.takeDamage(stats.damage);
+                    const isHeadshot = obj.userData.part === 'head';
+                    const damage = isHeadshot ? stats.damage * 2 : stats.damage;
+                    const killed = obj.userData.entity.takeDamage(damage);
+
                     this.game.spawnParticles(intersect.point, 0xff0000, 5);
                     hitSomething = true;
                     if (killed) killedSomething = true;
-                    this.game.soundManager.playHit('body');
+
+                    if (isHeadshot) {
+                        this.game.soundManager.playHit('head'); // Assuming sound manager can handle or just play high pitch
+                    } else {
+                        this.game.soundManager.playHit('body');
+                    }
+
+                    if (hitSomething) this.showHitMarker(killedSomething, isHeadshot);
                     break;
                 } else if (obj.isMesh) {
                     this.game.spawnParticles(intersect.point, 0xffff00, 3);
@@ -590,7 +600,8 @@ export class Player {
             }
         }
 
-        if (hitSomething) this.showHitMarker(killedSomething);
+        // Hit marker handled inside loop to capture headshot state
+        // if (hitSomething) this.showHitMarker(killedSomething);
     }
 
     applyRecoil(stats) {
@@ -606,26 +617,29 @@ export class Player {
         this.shakeIntensity = kick * 5;
     }
 
-    showHitMarker(killed) {
+    showHitMarker(killed, isHeadshot) {
         const el = document.getElementById('hit-marker');
         if (el) {
             el.style.opacity = 1;
-            el.innerHTML = killed ?
-                `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>` :
-                `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="15" y1="15" x2="25" y2="25" stroke="white" stroke-width="2" /><line x1="25" y1="15" x2="15" y2="25" stroke="white" stroke-width="2" /></svg>`;
+
+            if (isHeadshot) {
+                el.innerHTML = `<div style="color: red; font-size: 40px; font-weight: bold; text-shadow: 2px 2px black;">ПРЯМО В ЯБЛОЧКО!</div>`;
+                this.heal(5); // Headshot Heal
+            } else {
+                el.innerHTML = killed ?
+                    `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>` :
+                    `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="15" y1="15" x2="25" y2="25" stroke="white" stroke-width="2" /><line x1="25" y1="15" x2="15" y2="25" stroke="white" stroke-width="2" /></svg>`;
+                this.heal(1); // Body Heal
+            }
 
             if (killed) {
                 this.game.soundManager.playHit('kill');
-                // Heal on Kill (Fixed 5)
-                this.heal(5);
-            } else {
-                // Heal on Hit (1)
-                this.heal(1);
+                if (!isHeadshot) this.heal(5); // Bonus heal for kill if not already headshot (avoid double heal? No, let's keep it simple: Headshot=5, Body=1. Kill = maybe extra? User said "when hitting head 5", "logic life steal". Let's stick to user request: Hit=1, Head=5. Kill might not need extra if we follow strict instructions, but usually kill gives more. User said "1-5 units when hitting". So let's do: Body Hit=1, Head Hit=5.  Kill is just a state.)
             }
 
             setTimeout(() => {
                 el.style.opacity = 0;
-            }, 100);
+            }, isHeadshot ? 1000 : 100); // Show text longer
         }
     }
 

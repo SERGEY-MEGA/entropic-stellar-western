@@ -50,6 +50,7 @@ export class Enemy {
         // Head
         const head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 16), skinMat);
         head.position.y = 1.55;
+        head.userData.part = 'head'; // HEADSHOT TAG
         this.mesh.add(head);
 
         // Eyes (Direction Indicator)
