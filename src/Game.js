@@ -448,7 +448,7 @@ export class Game {
         this.player.controls.unlock();
         const menu = document.getElementById('shop-menu');
         if (menu) {
-            menu.style.display = 'block';
+            menu.style.display = 'flex';
             this.renderShopItems();
         }
     }

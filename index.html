@@ -101,6 +101,11 @@
     <div id="game-container"></div>
     <div id="crosshair"></div>
 
+    <!-- Hit Marker (for headshot/kill feedback + healing) -->
+    <div id="hit-marker"
+        style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 500; opacity: 0;">
+    </div>
+
     <div id="player-stats">
         <div>Kills: <span id="kill-count">0</span></div>
         <div>Health: 100</div>
@@ -111,13 +116,13 @@
         <div class="menu-btn" id="btn-start">ИГРАТЬ</div>
         <p>
             WASD - Движение | Мышь - Обзор<br>
-            КЛИК - Стрельба | ESC - Меню
+            КЛИК - Стрельба | G - Магазин | ESC - Меню
         </p>
     </div>
 
-    <!-- Shop Menu -->
+    <!-- Shop Menu (hidden by default, JS toggles via display:block) -->
     <div id="shop-menu"
-        style="display: none; position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; color: white; flex-direction: column; align-items: center; justify-content: center;">
         <h1 style="color: gold; text-shadow: 2px 2px 0 #000;">МАГАЗИН ОРУЖИЯ</h1>
         <div id="shop-items"
             style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1000px;">
