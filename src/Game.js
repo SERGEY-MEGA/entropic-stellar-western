@@ -229,10 +229,9 @@ export class Game {
         if (menu) menu.style.display = 'none';
 
         // Show HUD
-        ['score', 'health', 'weapon'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'block';
-        });
+        // Show HUD
+        const hud = document.getElementById('player-stats');
+        if (hud) hud.style.display = 'block';
         if (crosshair) crosshair.style.display = 'block';
 
         this.state = 'PLAYING';

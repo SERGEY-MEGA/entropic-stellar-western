@@ -363,14 +363,19 @@ export class Player {
         const stats = this.weaponCatalog[this.currentWeapon];
         if (hud && stats) {
             hud.innerHTML = `
-                <div>Уровень: ${this.level} (Убито: ${this.kills})</div>
-                <div>Деньги: $${this.money}</div>
-                <div>Оружие: ${stats.name}</div>
-                <div style="font-size: 32px; color: ${this.currentAmmo <= 3 ? 'red' : 'white'}">
-                    ПАТРОНЫ: ${this.currentAmmo} / ${stats.magSize}
+                <div style="display: flex; justify-content: space-between; width: 300px;">
+                    <div style="color: #ff3333; text-shadow: 2px 2px 0 #000;">
+                        ❤️ ${Math.ceil(this.health)}
+                    </div>
+                     <div style="color: gold;">$${this.money}</div>
                 </div>
-                ${this.currentAmmo === 0 ? '<div style="color:red; font-size:18px;">ЖМИ [R] - ПЕРЕЗАРЯДКА!</div>' : ''}
-                ${this.currentAmmo === 1 ? '<div style="position:fixed; top:40%; left:0; width:100%; text-align:center; color:red; font-size:50px; font-weight:bold; text-shadow:2px 2px black; pointer-events:none;">ПОСЛЕДНИЙ ПАТРОН</div>' : ''}
+                <div style="margin-top: 5px; font-size: 20px;">Уровень: ${this.level} (💀 ${this.kills})</div>
+                <div style="margin-top: 5px; color: #ccc;">Оружие: ${stats.name}</div>
+                <div style="font-size: 32px; font-weight: bold; margin-top: 5px; color: ${this.currentAmmo <= 3 ? 'red' : 'white'}">
+                    💥 ${this.currentAmmo} / ${stats.magSize}
+                </div>
+                ${this.currentAmmo === 0 ? '<div style="color:red; font-size:24px; font-weight:bold; blink:true; margin-top:10px;">ЖМИ [R] - ПЕРЕЗАРЯДКА!</div>' : ''}
+                ${this.currentAmmo === 1 ? '<div style="position:fixed; top:40%; left:0; width:100%; text-align:center; color:red; font-size:60px; font-weight:bold; text-shadow:4px 4px black; pointer-events:none; z-index:999;">ПОСЛЕДНИЙ ПАТРОН</div>' : ''}
             `;
         }
     }
