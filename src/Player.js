@@ -566,6 +566,7 @@ export class Player {
 
             for (let intersect of intersects) {
                 let obj = intersect.object;
+                const hitMesh = intersect.object; // Save ORIGINAL mesh before traversal
 
                 if (obj === this.game.player.mesh ||
                     obj.userData.ignoreRaycast ||
@@ -577,21 +578,28 @@ export class Player {
                 }
 
                 if (obj.userData.entity && obj.userData.entity.takeDamage) {
-                    const isHeadshot = obj.userData.part === 'head';
+                    // Check headshot on the ORIGINAL hit mesh, not the traversed parent
+                    const isHeadshot = hitMesh.userData.part === 'head';
                     const damage = isHeadshot ? stats.damage * 2 : stats.damage;
                     const killed = obj.userData.entity.takeDamage(damage);
 
-                    this.game.spawnParticles(intersect.point, 0xff0000, 5);
+                    this.game.spawnParticles(intersect.point, isHeadshot ? 0xffff00 : 0xff0000, isHeadshot ? 15 : 5);
                     hitSomething = true;
                     if (killed) killedSomething = true;
 
+                    // Heal on hit
+                    const healAmount = isHeadshot ? 5 : 1;
+                    this.heal(healAmount);
+
+                    // Show feedback
+                    this.showHitMarker(killedSomething, isHeadshot);
+
                     if (isHeadshot) {
-                        this.game.soundManager.playHit('head'); // Assuming sound manager can handle or just play high pitch
+                        this.game.soundManager.playHit('kill');
                     } else {
                         this.game.soundManager.playHit('body');
                     }
 
-                    if (hitSomething) this.showHitMarker(killedSomething, isHeadshot);
                     break;
                 } else if (obj.isMesh) {
                     this.game.spawnParticles(intersect.point, 0xffff00, 3);
@@ -600,20 +608,12 @@ export class Player {
             }
         }
 
-        // Hit marker handled inside loop to capture headshot state
-        // if (hitSomething) this.showHitMarker(killedSomething);
+        // Hit marker handled inside loop
     }
 
     applyRecoil(stats) {
-        // Kick camera UP
-        // Just rotating controls pitch directly
-        // PointerLockControls usually handles this via mouse move.
-        // We can manually adjust object.rotation.x
-
-        const kick = (stats.damage / 100) * 0.05; // Base kick on damage
+        const kick = (stats.damage / 100) * 0.05;
         this.targetRecoilPitch += kick;
-
-        // Camera "Shake"
         this.shakeIntensity = kick * 5;
     }
 
@@ -623,23 +623,20 @@ export class Player {
             el.style.opacity = 1;
 
             if (isHeadshot) {
-                el.innerHTML = `<div style="color: red; font-size: 40px; font-weight: bold; text-shadow: 2px 2px black;">ПРЯМО В ЯБЛОЧКО!</div>`;
-                this.heal(5); // Headshot Heal
+                el.innerHTML = `<div style="color: red; font-size: 48px; font-weight: bold; text-shadow: 3px 3px black; white-space: nowrap;">🎯 ПРЯМО В ЯБЛОЧКО!</div>`;
+            } else if (killed) {
+                el.innerHTML = `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>`;
             } else {
-                el.innerHTML = killed ?
-                    `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>` :
-                    `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="15" y1="15" x2="25" y2="25" stroke="white" stroke-width="2" /><line x1="25" y1="15" x2="15" y2="25" stroke="white" stroke-width="2" /></svg>`;
-                this.heal(1); // Body Heal
+                el.innerHTML = `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="15" y1="15" x2="25" y2="25" stroke="white" stroke-width="2" /><line x1="25" y1="15" x2="15" y2="25" stroke="white" stroke-width="2" /></svg>`;
             }
 
             if (killed) {
                 this.game.soundManager.playHit('kill');
-                if (!isHeadshot) this.heal(5); // Bonus heal for kill if not already headshot (avoid double heal? No, let's keep it simple: Headshot=5, Body=1. Kill = maybe extra? User said "when hitting head 5", "logic life steal". Let's stick to user request: Hit=1, Head=5. Kill might not need extra if we follow strict instructions, but usually kill gives more. User said "1-5 units when hitting". So let's do: Body Hit=1, Head Hit=5.  Kill is just a state.)
             }
 
             setTimeout(() => {
                 el.style.opacity = 0;
-            }, isHeadshot ? 1000 : 100); // Show text longer
+            }, isHeadshot ? 1500 : 150);
         }
     }
 
@@ -656,20 +653,21 @@ export class Player {
             healEl.style.position = 'absolute';
             healEl.style.color = '#00ff00';
             healEl.style.fontWeight = 'bold';
-            healEl.style.fontSize = '24px';
+            healEl.style.fontSize = '28px';
             healEl.style.left = '50%';
-            healEl.style.top = '45%'; // Slightly above center
+            healEl.style.top = '45%';
             healEl.style.transform = 'translate(-50%, -50%)';
             healEl.style.pointerEvents = 'none';
-            healEl.style.textShadow = '1px 1px black';
+            healEl.style.textShadow = '2px 2px black';
+            healEl.style.zIndex = '999';
             document.body.appendChild(healEl);
 
             // Animate up
             let op = 1;
             let top = 45;
             const anim = setInterval(() => {
-                op -= 0.05;
-                top -= 0.5;
+                op -= 0.03;
+                top -= 0.4;
                 healEl.style.opacity = op;
                 healEl.style.top = top + '%';
                 if (op <= 0) {
@@ -678,9 +676,8 @@ export class Player {
                 }
             }, 50);
 
-            // Update New UI
-            const healthVal = document.getElementById('health-value');
-            if (healthVal) healthVal.innerText = Math.ceil(this.health);
+            // Update HUD to reflect new health
+            this.updateHUD();
         }
     }
 
