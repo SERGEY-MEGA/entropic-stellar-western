@@ -623,7 +623,7 @@ export class Player {
                     // Money bonus for hits
                     const moneyBonus = isHeadshot ? 200 : 50;
                     this.money += moneyBonus;
-                    this.showFloatingText(`+$${moneyBonus}`, isHeadshot ? '#FFD700' : '#C0C0C0', '40%');
+                    this.showFloatingText(`+$${moneyBonus}`, isHeadshot ? '#FFD700' : '#C0C0C0', '28%');
 
                     // Show feedback
                     this.showHitMarker(killedSomething, isHeadshot);
@@ -657,7 +657,7 @@ export class Player {
             el.style.opacity = 1;
 
             if (isHeadshot) {
-                el.innerHTML = `<div style="color: red; font-size: 48px; font-weight: bold; text-shadow: 3px 3px black; white-space: nowrap;">🎯 ПРЯМО В ЯБЛОЧКО!</div>`;
+                el.innerHTML = `<div style="color: red; font-size: 28px; font-weight: bold; text-shadow: 2px 2px black; white-space: nowrap;">🎯 ПРЯМО В ЯБЛОЧКО!</div>`;
             } else if (killed) {
                 el.innerHTML = `<svg width="40" height="40" viewBox="0 0 40 40"><line x1="10" y1="10" x2="30" y2="30" stroke="red" stroke-width="4" /><line x1="30" y1="10" x2="10" y2="30" stroke="red" stroke-width="4" /></svg>`;
             } else {
@@ -687,9 +687,9 @@ export class Player {
             healEl.style.position = 'absolute';
             healEl.style.color = '#00ff00';
             healEl.style.fontWeight = 'bold';
-            healEl.style.fontSize = '28px';
+            healEl.style.fontSize = '16px';
             healEl.style.left = '50%';
-            healEl.style.top = '45%';
+            healEl.style.top = '30%';
             healEl.style.transform = 'translate(-50%, -50%)';
             healEl.style.pointerEvents = 'none';
             healEl.style.textShadow = '2px 2px black';
@@ -698,7 +698,7 @@ export class Player {
 
             // Animate up
             let op = 1;
-            let top = 45;
+            let top = 30;
             const anim = setInterval(() => {
                 op -= 0.03;
                 top -= 0.4;
@@ -721,7 +721,7 @@ export class Player {
         el.style.position = 'absolute';
         el.style.color = color;
         el.style.fontWeight = 'bold';
-        el.style.fontSize = '26px';
+        el.style.fontSize = '16px';
         el.style.left = '55%';
         el.style.top = startTop || '45%';
         el.style.transform = 'translate(-50%, -50%)';
