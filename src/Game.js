@@ -99,6 +99,13 @@ export class Game {
     setupEventListeners() {
         window.addEventListener('resize', this.onWindowResize.bind(this));
 
+        // Fallback: Click to Lock
+        document.addEventListener('click', () => {
+            if (this.state === 'PLAYING' && this.player && this.player.controls && !this.player.controls.isLocked) {
+                this.player.controls.lock();
+            }
+        });
+
         // Shop Toggle
         document.addEventListener('keydown', (e) => {
             if (e.code === 'KeyG') {

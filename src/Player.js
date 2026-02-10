@@ -9,8 +9,7 @@ export class Player {
         this.scene = game.scene;
         this.physicsWorld = game.physicsWorld;
 
-        // Critical for FPS: Yaw then Pitch
-        this.camera.rotation.order = 'YXZ';
+        // PointerLockControls handles rotation order internally ('YXZ')
 
         this.moveState = {
             forward: false,
