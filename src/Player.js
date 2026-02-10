@@ -570,6 +570,41 @@ export class Player {
             b2.rotation.x = -Math.PI / 2; b2.position.set(0.02, 0.04, -0.25);
             group.add(b2);
 
+        } else if (type === 'sharps') {
+            // Sharps Rifle (Long range, single shot)
+            // Stock
+            const stock = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.4), woodMat);
+            stock.position.set(0, 0, 0.25);
+            group.add(stock);
+
+            // Breech
+            const breech = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.09, 0.15), metalMat);
+            breech.position.set(0, 0.03, -0.05);
+            group.add(breech);
+
+            // Hammer
+            const hammer = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.04, 0.02), metalMat);
+            hammer.position.set(0, 0.08, 0);
+            hammer.rotation.x = -0.5;
+            group.add(hammer);
+
+            // Long Octagonal Barrel (Cylinder with 8 segments)
+            const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.03, 1.0, 8), metalMat);
+            barrel.rotation.x = -Math.PI / 2;
+            barrel.position.set(0, 0.05, -0.6);
+            group.add(barrel);
+
+            // Scope (Brass tube)
+            const scopeMat = new THREE.MeshStandardMaterial({ color: 0xB5A642, metalness: 0.6, roughness: 0.3 });
+            const scopeTube = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.4, 16), scopeMat);
+            scopeTube.rotation.x = -Math.PI / 2;
+            scopeTube.position.set(0, 0.11, -0.15);
+            group.add(scopeTube);
+
+            // Scope Mounts
+            const m1 = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.04, 0.01), metalMat); m1.position.set(0, 0.08, -0.05); group.add(m1);
+            const m2 = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.04, 0.01), metalMat); m2.position.set(0, 0.08, -0.25); group.add(m2);
+
         } else if (type === 'gatling') {
             // Gatling
             const body = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.2), metalMat);
@@ -674,7 +709,7 @@ export class Player {
                     this.heal(healAmount);
 
                     // Money bonus for hits
-                    const moneyBonus = isHeadshot ? 200 : 50;
+                    const moneyBonus = isHeadshot ? 300 : 150;
                     this.money += moneyBonus;
                     this.showFloatingText(`+$${moneyBonus}`, isHeadshot ? '#FFD700' : '#C0C0C0', '28%');
 
@@ -729,8 +764,17 @@ export class Player {
 
     heal(amount) {
         if (this.health >= 100) return;
+
+        // Difficulty Scaling: Heal less at higher levels
+        // Level 1: Div 1. Level 3: Div 2. Level 5: Div 3.
+        const difficultyFactor = Math.ceil(this.level / 2);
+        const effectiveHeal = amount / difficultyFactor;
+
+        // Don't heal 0 if amount is small
+        const finalHeal = effectiveHeal < 1 ? 1 : effectiveHeal;
+
         const oldHealth = this.health;
-        this.health = Math.min(100, this.health + amount);
+        this.health = Math.min(100, this.health + finalHeal);
 
         const diff = this.health - oldHealth;
         if (diff > 0) {

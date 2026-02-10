@@ -107,30 +107,26 @@
     </div>
 
     <!-- Sniper Scope Overlay (hidden by default) -->
+    <!-- Sniper Scope Overlay (Wild West Style) -->
     <div id="sniper-scope"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150;">
-        <!-- Dark vignette borders -->
+
+        <!-- Scope Circle & Vignette -->
         <div
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.95) 65%);">
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vh; height: 80vh; border-radius: 50%; box-shadow: 0 0 0 100vw #000, inset 0 0 40px rgba(0,0,0,0.8); border: 20px solid #5a4a2d; background: rgba(255, 240, 200, 0.1);">
         </div>
-        <!-- Crosshair lines -->
-        <div style="position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: rgba(255,0,0,0.6);">
-        </div>
-        <div style="position: absolute; top: 0; left: 50%; width: 1px; height: 100%; background: rgba(255,0,0,0.6);">
-        </div>
-        <!-- Center dot -->
+
+        <!-- Crosshair (Simple Black Lines) -->
         <div
-            style="position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: red; border-radius: 50%; transform: translate(-50%, -50%);">
-        </div>
-        <!-- Range ticks -->
-        <div
-            style="position: absolute; top: 52%; left: 50%; transform: translateX(-50%); width: 20px; height: 1px; background: rgba(255,0,0,0.4);">
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 78vh; height: 2px; background: rgba(0,0,0,0.8);">
         </div>
         <div
-            style="position: absolute; top: 54%; left: 50%; transform: translateX(-50%); width: 14px; height: 1px; background: rgba(255,0,0,0.3);">
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 2px; height: 78vh; background: rgba(0,0,0,0.8);">
         </div>
+
+        <!-- Lens Dirt / Scratch Effect (Optional subtle texture) -->
         <div
-            style="position: absolute; top: 56%; left: 50%; transform: translateX(-50%); width: 10px; height: 1px; background: rgba(255,0,0,0.2);">
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vh; height: 80vh; border-radius: 50%; background: radial-gradient(circle, transparent 60%, rgba(100, 50, 0, 0.1)); pointer-events: none;">
         </div>
     </div>
 
