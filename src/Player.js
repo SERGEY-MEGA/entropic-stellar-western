@@ -217,9 +217,29 @@ export class Player {
                 damage: 100,
                 rate: 600,
                 spread: 0.01,
-                magSize: 12, // 6 each
+                magSize: 12,
                 color: 0xC0C0C0,
                 desc: "Баланс. 12 Патронов."
+            },
+            derringer: {
+                name: 'Дерринджер',
+                price: 200,
+                damage: 150,
+                rate: 800,
+                spread: 0.03,
+                magSize: 2,
+                color: 0xBBBBBB,
+                desc: "Карманный. 2 патрона, но больно."
+            },
+            volcanic: {
+                name: 'Пистолет Волканик',
+                price: 800,
+                damage: 120,
+                rate: 300,
+                spread: 0.05,
+                magSize: 10,
+                color: 0x444444,
+                desc: "Скорострельный."
             },
             winchester: {
                 name: 'Винчестер',
@@ -230,6 +250,16 @@ export class Player {
                 magSize: 8,
                 color: 0x8B4513,
                 desc: "Точность. 8 Патронов."
+            },
+            sharps: {
+                name: 'Шарпс (Снайперка)',
+                price: 1500,
+                damage: 500,
+                rate: 2000,
+                spread: 0.0,
+                magSize: 1,
+                color: 0x6B4226,
+                desc: "Один точный выстрел. Перезарядка долгая."
             },
             sawedoff: {
                 name: 'Обрез Дробовика',
@@ -242,6 +272,16 @@ export class Player {
                 color: 0x333333,
                 desc: "Убойная мощь вблизи."
             },
+            dynamite: {
+                name: 'Динамит-Пушка',
+                price: 2000,
+                damage: 300,
+                rate: 2500,
+                spread: 0.08,
+                magSize: 3,
+                color: 0xFF4500,
+                desc: "Взрывная мощь. 3 заряда."
+            },
             gatling: {
                 name: 'Пулемет Гатлинга',
                 price: 3000,
@@ -251,17 +291,6 @@ export class Player {
                 magSize: 100,
                 color: 0x556B2F,
                 desc: "Свинцовый дождь."
-            },
-            random: {},
-            volcanic: {
-                name: 'Пистолет Волканик',
-                price: 800,
-                damage: 120,
-                rate: 300,
-                spread: 0.05,
-                magSize: 10,
-                color: 0x444444,
-                desc: "Скорострельный."
             },
             golden: {
                 name: 'Золотой Пистолет',
@@ -591,6 +620,11 @@ export class Player {
                     const healAmount = isHeadshot ? 5 : 1;
                     this.heal(healAmount);
 
+                    // Money bonus for hits
+                    const moneyBonus = isHeadshot ? 200 : 50;
+                    this.money += moneyBonus;
+                    this.showFloatingText(`+$${moneyBonus}`, isHeadshot ? '#FFD700' : '#C0C0C0', '40%');
+
                     // Show feedback
                     this.showHitMarker(killedSomething, isHeadshot);
 
@@ -679,6 +713,35 @@ export class Player {
             // Update HUD to reflect new health
             this.updateHUD();
         }
+    }
+
+    showFloatingText(text, color, startTop) {
+        const el = document.createElement('div');
+        el.innerText = text;
+        el.style.position = 'absolute';
+        el.style.color = color;
+        el.style.fontWeight = 'bold';
+        el.style.fontSize = '26px';
+        el.style.left = '55%';
+        el.style.top = startTop || '45%';
+        el.style.transform = 'translate(-50%, -50%)';
+        el.style.pointerEvents = 'none';
+        el.style.textShadow = '2px 2px black';
+        el.style.zIndex = '999';
+        document.body.appendChild(el);
+
+        let op = 1;
+        let topVal = parseFloat(startTop) || 45;
+        const anim = setInterval(() => {
+            op -= 0.03;
+            topVal -= 0.3;
+            el.style.opacity = op;
+            el.style.top = topVal + '%';
+            if (op <= 0) {
+                clearInterval(anim);
+                el.remove();
+            }
+        }, 50);
     }
 
     triggerDryFire() {

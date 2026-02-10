@@ -56,12 +56,12 @@ export class Enemy {
         // Eyes (Direction Indicator)
         const eyeGeo = new THREE.SphereGeometry(0.03, 8, 8);
         const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-        const leftEye = new THREE.Mesh(eyeGeo, eyeMat); leftEye.position.set(-0.06, 1.58, 0.12); this.mesh.add(leftEye);
-        const rightEye = new THREE.Mesh(eyeGeo, eyeMat); rightEye.position.set(0.06, 1.58, 0.12); this.mesh.add(rightEye);
+        const leftEye = new THREE.Mesh(eyeGeo, eyeMat); leftEye.position.set(-0.06, 1.58, 0.12); leftEye.userData.part = 'head'; this.mesh.add(leftEye);
+        const rightEye = new THREE.Mesh(eyeGeo, eyeMat); rightEye.position.set(0.06, 1.58, 0.12); rightEye.userData.part = 'head'; this.mesh.add(rightEye);
 
         // Hat
-        const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.02, 16), hatMat); hatBrim.position.y = 1.6; this.mesh.add(hatBrim);
-        const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.15, 16), hatMat); hatTop.position.y = 1.68; this.mesh.add(hatTop);
+        const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.02, 16), hatMat); hatBrim.position.y = 1.6; hatBrim.userData.part = 'head'; this.mesh.add(hatBrim);
+        const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.15, 16), hatMat); hatTop.position.y = 1.68; hatTop.userData.part = 'head'; this.mesh.add(hatTop);
 
         // Arms
         const armGeo = new THREE.CylinderGeometry(0.06, 0.05, 0.35, 8);
